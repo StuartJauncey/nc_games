@@ -1,4 +1,5 @@
 const db = require("../connection");
+const format = require("pg-format");
 
 const seed = async (data) => {
   // Drop tables if they exist
@@ -49,6 +50,18 @@ const seed = async (data) => {
     )
   ;`)
   // 2. insert data
+  const queryString = format(
+    `INSERT INTO categories (slug, description)
+    VALUES
+    %L RETURNING*;`,
+    categoryData.map(category => {
+      return [
+        category.slug,
+        category.description
+      ];
+    })
+  )
+  await db.query(queryString)
 };
 
 module.exports = seed;
