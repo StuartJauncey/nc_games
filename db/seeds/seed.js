@@ -50,7 +50,7 @@ const seed = async (data) => {
     )
   ;`)
   // 2. insert data
-  const queryString = format(
+  const categoryString = format(
     `INSERT INTO categories (slug, description)
     VALUES
     %L RETURNING*;`,
@@ -61,7 +61,21 @@ const seed = async (data) => {
       ];
     })
   )
-  await db.query(queryString)
+  await db.query(categoryString)
+
+  const userString = format(
+    `INSERT INTO users (username, avatar_url, name)
+    VALUES
+    %L RETURNING *;`,
+    userData.map(user => {
+      return [
+        user.username,
+        user.avatar_url,
+        user.name
+      ]
+    })
+  )
+  await db.query(userString)
 };
 
 module.exports = seed;
