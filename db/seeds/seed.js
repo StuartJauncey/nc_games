@@ -76,6 +76,25 @@ const seed = async (data) => {
     })
   )
   await db.query(userString)
+
+  const reviewString = format(
+    `INSERT INTO reviews (title, review_body, designer, review_img_url, votes, category, owner, created_at)
+    VALUES
+    %L RETURNING *;`,
+    reviewData.map(review => {
+      return [
+        review.title,
+        review.review_body,
+        review.designer,
+        review.review_img_url,
+        review.votes,
+        review.category,
+        review.owner,
+        review.created_at
+      ]
+    })
+  )
+  await db.query(reviewString);
 };
 
 module.exports = seed;
