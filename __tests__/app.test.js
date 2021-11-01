@@ -8,7 +8,7 @@ beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
 describe("app", () => {
-  
+
   test("status: 404 responds with an error not found error when passed a bad path", () => {
     return request(app)
     .get("/not a good path")
@@ -34,6 +34,32 @@ describe("app", () => {
             });
           })
         });
+      });
+    });
+  });
+
+  describe("/api/reviews/:review_id", () => {
+    describe("GET", () => {
+      test("status: 200 responds with a review object which should have the following properties", () => {
+        return request(app)
+        .get("/api/reviews/1")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toEqual({
+            "review": {
+              owner: 'mallionaire',
+              title: 'Agricola',
+              review_id: 1,
+              review_body: 'Farmyard fun!',
+              designer: 'Uwe Rosenberg',
+              review_img_url:
+                'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+              category: 'euro game',
+              created_at: new Date(1610964020514),
+              votes: 1
+            }
+          })
+        })
       });
     });
   });
