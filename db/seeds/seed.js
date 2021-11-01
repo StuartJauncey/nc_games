@@ -72,7 +72,7 @@ const seed = async (data) => {
         user.username,
         user.avatar_url,
         user.name
-      ]
+      ];
     })
   )
   await db.query(userString)
@@ -91,10 +91,26 @@ const seed = async (data) => {
         review.category,
         review.owner,
         review.created_at
-      ]
+      ];
     })
   )
   await db.query(reviewString);
+
+  const commentString = format(
+    `INSERT INTO comments (author, review_id, votes, created_at, body)
+    VALUES
+    %L RETURNING *;`,
+    commentData.map(comment => {
+      return [
+        comment.author,
+        comment.review_id,
+        comment.votes,
+        comment.created_at,
+        comment.body
+      ];
+    })
+  )
+  await db.query(commentString);
 };
 
 module.exports = seed;
