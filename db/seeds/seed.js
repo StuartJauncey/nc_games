@@ -113,4 +113,4 @@ const seed = async (data) => {
   await db.query(commentString);
 };
 
-module.exports = seed;
+module.exports = { seed };
