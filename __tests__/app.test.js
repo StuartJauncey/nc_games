@@ -7,10 +7,20 @@ const app = require("../app");
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
-describe.only("app", () => {
+describe("app", () => {
+  
+  test("status: 404 responds with an error not found error when passed a bad path", () => {
+    return request(app)
+    .get("/not a good path")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Invalid URL");
+    });
+  });
+
   describe("/api/categories", () => {
     describe("GET", () => {
-      test("status:200 responds with an array of categories with the properties of slug and description", () => {
+      test("status: 200 responds with an array of categories with the properties of slug and description", () => {
         return request(app)
         .get("/api/categories")
         .expect(200)
