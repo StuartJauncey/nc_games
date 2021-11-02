@@ -38,6 +38,34 @@ describe("app", () => {
     });
   });
 
+  describe("/api/reviews", () => {
+    describe("GET", () => {
+      test("status: 200 responds with an array of review objects with the correct properties", () => {
+        return request(app)
+        .get("/api/reviews")
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          expect(reviews).toHaveLength(13);
+          expect(reviews).toBeInstanceOf(Array);
+          reviews.forEach(review => {
+            expect(review).toMatchObject({
+              owner: expect.any(String),
+              title: expect.any(String),
+              review_id: expect.any(Number),
+              review_body: expect.any(String),
+              designer: expect.any(String),
+              review_img_url: expect.any(String),
+              category: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(String)
+            })
+          }) 
+        })
+      });
+    });
+  });
+
   describe("/api/reviews/:review_id", () => {
     describe("GET", () => {
       test("status: 200 responds with a review object which should have the following properties", () => {
