@@ -42,24 +42,38 @@ describe("app", () => {
     describe("GET", () => {
       test("status: 200 responds with a review object which should have the following properties", () => {
         return request(app)
-        .get("/api/reviews/1")
+        .get("/api/reviews/3")
         .expect(200)
-        .then(({ body }) => {
-          expect(body).toEqual({
-            "review": {
-              owner: 'mallionaire',
-              title: 'Agricola',
-              review_id: 1,
-              review_body: 'Farmyard fun!',
-              designer: 'Uwe Rosenberg',
-              review_img_url:
-                'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
-              category: 'euro game',
-              created_at: "2021-01-18T10:00:20.514Z",
-              votes: 1
-            }
+        .then(({ body: { review } }) => {
+          expect(review).toMatchObject({
+            owner: expect.any(String),
+            title: expect.any(String),
+            review_id: expect.any(Number),
+            review_body: expect.any(String),
+            designer: expect.any(String),
+            review_img_url: expect.any(String),
+            category: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(String)
           })
         })
+      });
+      test("status: 400 when passed an invalid review_id parameter type", () => {
+        return request(app)
+        .get("/api/reviews/hello")
+        .expect(400)
+        .then(({ body: {msg} }) => {
+          expect(msg).toBe("Invalid request");
+        })
+      })
+      test("status: 404 when provided a valid review_id type but there is no corresponding review", () => {
+        return request(app)
+        .get("/api/reviews/9999")
+        .expect(404)
+        .then(({ body: {msg} }) => {
+          expect(msg).toBe("Review not found");
+        }) 
       });
     });
   });
