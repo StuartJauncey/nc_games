@@ -7,9 +7,13 @@ exports.handleCustomErrors = (err, req, res, next) => {
 }
 
 exports.handlePSQLErrors = (err, req, res, next) => {
-  if (err.code === "22P02") {
+  if (err.code === "22P02" ) {
     res.status(400).send({ msg: "Invalid request" });
-  } else {
+  }
+  if (err.code === "42703" || err.code === "42P10" ) {
+    res.status(400).send({ msg: "Invalid query" });
+  }
+  else {
     next(err);
   }
 }

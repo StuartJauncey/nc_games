@@ -1,6 +1,10 @@
 const db = require("../db/connection");
 
 const fetchReviewById = async (id) => {
+  const idType = isNaN(id);
+  if (idType) {
+    return Promise.reject({ status: 400, msg: "Invalid request" });
+  }
   const { rows } = await db.query(
     `SELECT reviews.*, COUNT(comments.review_id) AS comment_count
     FROM reviews
@@ -40,8 +44,6 @@ const updateReviewVotesById = async (id, voteChange) => {
 }
 
 const fetchAllReviews = async (query) => {
-  console.log(query);
-
   let queryStr = `SELECT reviews.*,
   COUNT(comments.review_id) AS comment_count
   FROM reviews
@@ -57,6 +59,9 @@ const fetchAllReviews = async (query) => {
 
   let queryOrder = "DESC";
   if (query.hasOwnProperty("order")) {
+    if (query.order !== "asc" && query.order !== "desc") {
+      return Promise.reject({ status: 400, msg: "Invalid order query" });
+    }
     if (query.order) { queryOrder = query.order };
   }
   let querySortColumn = "created_at";
@@ -64,8 +69,23 @@ const fetchAllReviews = async (query) => {
     if (query.sort_by) { querySortColumn = query.sort_by; }
     queryStr += ` ORDER BY ${querySortColumn} ${queryOrder}`
   }
-  console.log(queryStr);
+
   const { rows } = await db.query(queryStr);
+
+  const validCategoriesQuery = await db.query(`SELECT slug FROM categories`);
+  const validCategories = validCategoriesQuery.rows.map(category => {
+    return category.slug;
+  })
+
+ 
+
+  if (rows.length === 0) {
+    if (validCategories.includes(query.category)) {
+      return Promise.reject({ status: 404, msg: "No associated reviews with category"});
+    }
+    return Promise.reject({ status: 400, msg: "Invalid query"});
+  }
+
   return rows;
 }
 

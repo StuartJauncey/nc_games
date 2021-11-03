@@ -167,6 +167,38 @@ describe("app", () => {
           }) 
         })
       });
+      test('status: 400 when passed a sort_by column query that does not exist', () => {
+        return request(app)
+        .get("/api/reviews?sort_by=banana")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Invalid query")
+        });
+      });
+      test('status: 400 when passed an order query that is not asc or desc', () => {
+        return request(app)
+        .get("/api/reviews?order=diagonally")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Invalid order query")
+        });
+      });
+      test('status: 400 when passed a category query that does not exist', () => {
+        return request(app)
+        .get("/api/reviews?category=not a category")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Invalid query")
+        });
+      });
+      test.skip('status: 404 when passed a category query that does exist but has no reviews associated with it', () => {
+        return request(app)
+        .get("/api/reviews?category=children's games")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("No associated reviews with category")
+        });
+      });
     });
   });
 
@@ -208,6 +240,7 @@ describe("app", () => {
         }) 
       });
     });
+
     describe("PATCH", () => {
       test('status: 200 when provided a valid request object and responds with the updated review', () => {
         const changeVotes = {
