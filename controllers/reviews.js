@@ -20,8 +20,10 @@ exports.patchReviewVotesById = (req, res, next) => {
 }
 
 exports.getAllReviews = (req, res, next) => {
-  fetchAllReviews()
+  const query = req.query;
+  fetchAllReviews(query)
   .then((reviews) => {
     res.status(200).send({ reviews });
   })
+  .catch(next);
 }

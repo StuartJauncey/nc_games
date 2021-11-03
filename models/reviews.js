@@ -39,15 +39,33 @@ const updateReviewVotesById = async (id, voteChange) => {
   return rows[0]
 }
 
-const fetchAllReviews = async () => {
-  const { rows } = await db.query(
-    `SELECT reviews.*, COUNT(comments.review_id) AS comment_count
-    FROM reviews
-    LEFT JOIN comments
-    ON reviews.review_id = comments.review_id
-    GROUP BY comments.review_id, reviews.review_id
-    ;`
-  );
+const fetchAllReviews = async (query) => {
+  console.log(query);
+
+  let queryStr = `SELECT reviews.*,
+  COUNT(comments.review_id) AS comment_count
+  FROM reviews
+  LEFT JOIN comments
+  ON reviews.review_id = comments.review_id
+  `
+
+  if (query.hasOwnProperty("category")) {
+    queryStr += `WHERE reviews.category = '${query.category}'`
+  }
+
+  queryStr += ` GROUP BY comments.review_id, reviews.review_id`
+
+  let queryOrder = "DESC";
+  if (query.hasOwnProperty("order")) {
+    if (query.order) { queryOrder = query.order };
+  }
+  let querySortColumn = "created_at";
+  if (query.hasOwnProperty("sort_by")) {
+    if (query.sort_by) { querySortColumn = query.sort_by; }
+    queryStr += ` ORDER BY ${querySortColumn} ${queryOrder}`
+  }
+  console.log(queryStr);
+  const { rows } = await db.query(queryStr);
   return rows;
 }
 
