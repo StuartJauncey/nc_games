@@ -291,4 +291,25 @@ describe("app", () => {
       });
     })
   });
+
+  describe("/api/reviews/:review_id/comments", () => {
+    describe("GET", () => {
+      test("status: 200 responds with an array of comments from the given review_id", () => {
+        return request(app)
+        .get("/api/reviews/2/comments")
+        .expect(200)
+        .then(({ body: {comments} }) => {
+          comments.forEach(comment => {
+            expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String)
+            })
+          })
+        });
+      });
+    });
+  });
 });
