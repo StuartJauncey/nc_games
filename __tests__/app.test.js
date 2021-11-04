@@ -353,6 +353,36 @@ describe("app", () => {
           })
         })
       });
+      test("status: 400 responds if an invalid request body is passed", () => {
+        const badComment = { name: "bainesface", body: "This game is good but not as good as Football Manager" };
+        return request(app)
+        .post("/api/reviews/1/comments")
+        .send(badComment)
+        .expect(400)
+        .then(({ body: {msg} }) => {
+          expect(msg).toBe("Invalid post syntax");
+        })
+      });
+      test("status: 400 responds if a valid request is passed with an invalid body datatype", () => {
+        const badComment = { username: "bainesface", body: 3 };
+        return request(app)
+        .post("/api/reviews/1/comments")
+        .send(badComment)
+        .expect(400)
+        .then(({ body: {msg} }) => {
+          expect(msg).toBe("Invalid body datatype");
+        })
+      });
+      test("status: 400 responds if a valid request body is passed with an invalid user", () => {
+        const badComment = { username: "steve", body: "This game is very nice." };
+        return request(app)
+        .post("/api/reviews/1/comments")
+        .send(badComment)
+        .expect(400)
+        .then(({ body: {msg} }) => {
+          expect(msg).toBe("Invalid user");
+        })
+      });
     });
   });
 });

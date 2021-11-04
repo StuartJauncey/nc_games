@@ -77,8 +77,6 @@ const fetchAllReviews = async (query) => {
     return category.slug;
   })
 
- 
-
   if (rows.length === 0) {
     if (validCategories.includes(query.category)) {
       return Promise.reject({ status: 404, msg: "No associated reviews with category"});

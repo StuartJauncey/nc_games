@@ -30,8 +30,15 @@ const fetchCommentsByReviewId = async (id) => {
 }
 
 const addCommentToReview = async (id, newComment) => {
-  console.log(id);
-  console.log(newComment);
+  if (!newComment.hasOwnProperty("username") || !newComment.hasOwnProperty("body")) {
+    return Promise.reject({ status: 400, msg: "Invalid post syntax" });
+  }
+
+  if (typeof newComment.body !== "string") {
+    return Promise.reject({ status: 400, msg: "Invalid body datatype"})
+  }
+
+
   const { username, body } = newComment;
 
   let queryStr = `

@@ -13,6 +13,9 @@ exports.handlePSQLErrors = (err, req, res, next) => {
   if (err.code === "42703" || err.code === "42P10" ) {
     res.status(400).send({ msg: "Invalid query" });
   }
+  if (err.code === "23503") {
+    res.status(400).send({ msg: "Invalid user" })
+  }
   else {
     next(err);
   }
