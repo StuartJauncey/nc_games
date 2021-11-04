@@ -310,6 +310,30 @@ describe("app", () => {
           })
         });
       });
+      test("status: 400 responds with bad request if passed an invalid review_id type", () => {
+        return request(app)
+        .get("/api/reviews/notanumber/comments")
+        .expect(400)
+        .then(({ body: {msg} }) => {
+          expect(msg).toBe("Invalid request");
+        })
+      });
+      test("status: 404 responds with review does not exist if passed a review_id that does not exist", () => {
+        return request(app)
+        .get("/api/reviews/999/comments")
+        .expect(404)
+        .then(({ body: { msg }}) => {
+          expect(msg).toBe("Review does not exist");
+        })
+      });
+      test("status: 200 responds with no comments associated with this review if the review exists but has no comments", () => {
+        return request(app)
+        .get("/api/reviews/1/comments")
+        .expect(200)
+        .then(({ body: { msg }}) => {
+          expect(msg).toBe("Review has no associated comments");
+        })
+      });
     });
   });
 });
