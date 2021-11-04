@@ -335,5 +335,24 @@ describe("app", () => {
         })
       });
     });
+    describe("POST", () => {
+      test("status: 201 responds with posted comment when passed a valid comment", () => {
+        const comment = { username: "bainesface", body: "This game is good but not as good as Football Manager" };
+        return request(app)
+        .post("/api/reviews/1/comments")
+        .send(comment)
+        .expect(201)
+        .then(({ body: { comment } }) => {
+          expect(comment).toMatchObject({
+            author: expect.any(String),
+            body: expect.any(String),
+            comment_id: expect.any(Number),
+            created_at: expect.any(String),
+            review_id: expect.any(Number),
+            votes: expect.any(Number)
+          })
+        })
+      });
+    });
   });
 });

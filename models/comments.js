@@ -29,4 +29,24 @@ const fetchCommentsByReviewId = async (id) => {
   return rows;
 }
 
-module.exports = { fetchCommentsByReviewId };
+const addCommentToReview = async (id, newComment) => {
+  console.log(id);
+  console.log(newComment);
+  const { username, body } = newComment;
+
+  let queryStr = `
+    INSERT INTO comments
+    (author, body, review_id)
+    VALUES
+    ($1, $2, $3)
+    RETURNING *
+  `
+
+  let queryParams = [username, body, id];
+
+  const {rows} = await db.query(queryStr, queryParams);
+
+  return rows[0];
+}
+
+module.exports = { fetchCommentsByReviewId, addCommentToReview };
