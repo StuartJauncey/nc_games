@@ -24,10 +24,9 @@ const fetchCommentsByReviewId = async (id) => {
     }
     return Promise.reject({ status: 404, msg: "Review does not exist" });
   }
-
-
   return rows;
 }
+
 
 const addCommentToReview = async (id, newComment) => {
   if (!newComment.hasOwnProperty("username") || !newComment.hasOwnProperty("body")) {
@@ -37,7 +36,6 @@ const addCommentToReview = async (id, newComment) => {
   if (typeof newComment.body !== "string") {
     return Promise.reject({ status: 400, msg: "Invalid body datatype"})
   }
-
 
   const { username, body } = newComment;
 
@@ -56,4 +54,22 @@ const addCommentToReview = async (id, newComment) => {
   return rows[0];
 }
 
-module.exports = { fetchCommentsByReviewId, addCommentToReview };
+
+const removeCommentById = async (id) => {
+  let queryStr = `
+  DELETE FROM comments
+  WHERE comment_id = $1
+  RETURNING *
+  `;
+
+  const { rows } = await db.query(queryStr, [id]);
+  
+  if (rows.length === 0) {
+    return Promise.reject({ status: 404, msg: "Comment does not exist" });
+  }
+  return rows;
+}
+
+module.exports = { fetchCommentsByReviewId, addCommentToReview, removeCommentById };
+
+

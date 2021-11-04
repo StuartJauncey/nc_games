@@ -18,6 +18,19 @@ describe("app", () => {
     });
   });
 
+  describe("/api", () => {
+    describe("GET", () => {
+      test("status: 200 responds with a JSON with all the available endpoints in the API", () => {
+        return request(app)
+        .get("/api")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.msg).toBe("apis...")
+        });
+      });
+    });
+  });
+
   describe("/api/categories", () => {
     describe("GET", () => {
       test("status: 200 responds with an array of categories with the properties of slug and description", () => {
@@ -381,6 +394,26 @@ describe("app", () => {
         .expect(400)
         .then(({ body: {msg} }) => {
           expect(msg).toBe("Invalid user");
+        })
+      });
+    });
+  });
+  describe("/api/comments/:comment_id", () => {
+    describe("DELETE", () => {
+      test("status: 204 responds with no content", () => {
+        return request(app)
+        .delete("/api/comments/3")
+        .expect(204)
+        .then(({ body }) => {
+          expect(body).toEqual({});
+        })
+      });
+      test("status: 404 responds with comment does not exist if the comment_id does not exist", () => {
+        return request(app)
+        .delete("/api/comments/999")
+        .expect(404)
+        .then(({ body:{msg} }) => {
+          expect(msg).toBe("Comment does not exist");
         })
       });
     });
