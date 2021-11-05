@@ -25,7 +25,11 @@ describe("app", () => {
         .get("/api")
         .expect(200)
         .then(({ body }) => {
-          expect(body.msg).toBe("apis...")
+          expect(body).toMatchObject({
+            "GET /api": expect.any(Object),
+            "GET /api/categories": expect.any(Object),
+            "GET /api/reviews": expect.any(Object)
+          });
         });
       });
     });
@@ -185,7 +189,7 @@ describe("app", () => {
         .get("/api/reviews?sort_by=banana")
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("Invalid query")
+          expect(msg).toBe("Invalid sort query")
         });
       });
       test('status: 400 when passed an order query that is not asc or desc', () => {

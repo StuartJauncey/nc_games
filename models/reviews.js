@@ -44,6 +44,12 @@ const updateReviewVotesById = async (id, voteChange) => {
 }
 
 const fetchAllReviews = async (query) => {
+  const columnHeaders = ["owner", "title", "review_id", "review_body", "designer", "review_img_url", "category", "created_at", "votes", "comment_count"];
+
+  if (!columnHeaders.includes(query.sort_by) && query.hasOwnProperty("sort_by") && query.sort_by !== "") {
+    return Promise.reject({ status: 400, msg: "Invalid sort query" });
+  }
+
   let queryStr = `SELECT reviews.*,
   COUNT(comments.review_id) AS comment_count
   FROM reviews
