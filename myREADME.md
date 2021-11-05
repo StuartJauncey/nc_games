@@ -1,7 +1,7 @@
 # Stuart's NC-games API
 
 Link to hosted version: 
-## https://stu-nc-games.herokuapp.com/
+## https://stu-nc-games.herokuapp.com/api
 
 ---
 
