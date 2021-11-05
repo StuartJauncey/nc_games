@@ -208,14 +208,6 @@ describe("app", () => {
           expect(msg).toBe("Invalid query")
         });
       });
-      test.skip('status: 404 when passed a category query that does exist but has no reviews associated with it', () => {
-        return request(app)
-        .get("/api/reviews?category=children's games")
-        .expect(404)
-        .then(({ body: { msg } }) => {
-          expect(msg).toBe("No associated reviews with category")
-        });
-      });
     });
   });
 
