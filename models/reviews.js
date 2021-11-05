@@ -1,11 +1,11 @@
 const db = require("../db/connection");
-const { checkIfNum } = require("../util-functions");
+const { checkIfNum, checkIdExists } = require("../util-functions");
 
 const fetchReviewById = async (id) => {
   if (!checkIfNum(id)) {
     return Promise.reject({ status: 400, msg: "Invalid request" });
   }
-  
+
   const { rows } = await db.query(
     `SELECT reviews.*, COUNT(comments.review_id) AS comment_count
     FROM reviews
@@ -35,6 +35,7 @@ const updateReviewVotesById = async (id, voteChange) => {
   } else {
     updatedVotes = currentVotes.rows[0].votes + voteChange.inc_votes;
   }
+
   let queryStr = `UPDATE reviews SET votes = $1 WHERE review_id = $2 RETURNING *;`;
   const queryParams = [updatedVotes, id];
   const { rows } = await db.query(queryStr, queryParams);
@@ -71,6 +72,7 @@ const fetchAllReviews = async (query) => {
     }
     if (query.order) { queryOrder = query.order };
   }
+  
   let querySortColumn = "created_at";
   if (query.hasOwnProperty("sort_by")) {
     if (query.sort_by) { querySortColumn = query.sort_by; }
@@ -85,7 +87,7 @@ const fetchAllReviews = async (query) => {
   })
 
   if (rows.length === 0) {
-    if (validCategories.includes(query.category)) {
+    if (checkIdExists(validCategories, query.category)) {
       return Promise.reject({ status: 404, msg: "No associated reviews with category"});
     }
     return Promise.reject({ status: 400, msg: "Invalid query"});

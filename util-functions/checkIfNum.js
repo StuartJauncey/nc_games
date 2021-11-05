@@ -1,4 +1,4 @@
-checkIfNum = (variable) => {
+const checkIfNum = (variable) => {
   return !isNaN(variable);
 }
 

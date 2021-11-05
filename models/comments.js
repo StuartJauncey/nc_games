@@ -1,5 +1,5 @@
 const db = require("../db/connection");
-const { checkIfNum } = require("../util-functions");
+const { checkIfNum, checkIdExists } = require("../util-functions");
 
 const fetchCommentsByReviewId = async (id) => {
   if (!checkIfNum(id)) {
@@ -9,7 +9,7 @@ const fetchCommentsByReviewId = async (id) => {
   let queryStr = `
     SELECT comment_id, votes, created_at, author, body FROM comments 
   `;
-  
+
   if (id) {
     queryStr += ` WHERE review_id = $1`
   }
@@ -21,7 +21,7 @@ const fetchCommentsByReviewId = async (id) => {
   });
   
   if (rows.length === 0) {
-    if (validReviews.includes(parseInt(id))) {
+    if (checkIdExists(validReviews, id)) {
       return Promise.reject({ status: 200, msg: "Review has no associated comments" })
     }
     return Promise.reject({ status: 404, msg: "Review does not exist" });

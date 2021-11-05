@@ -1,3 +1,4 @@
 const checkIfNum = require("./checkIfNum");
+const checkIdExists = require("./checkIdExists")
 
-module.exports = { checkIfNum };
+module.exports = { checkIfNum, checkIdExists };
