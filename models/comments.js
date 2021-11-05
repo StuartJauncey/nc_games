@@ -1,13 +1,15 @@
 const db = require("../db/connection");
+const { checkIfNum } = require("../util-functions");
 
 const fetchCommentsByReviewId = async (id) => {
-  const idType = isNaN(id);
-  if (idType) {
+  if (!checkIfNum(id)) {
     return Promise.reject({ status: 400, msg: "Invalid request" });
   }
+
   let queryStr = `
     SELECT comment_id, votes, created_at, author, body FROM comments 
   `;
+  
   if (id) {
     queryStr += ` WHERE review_id = $1`
   }

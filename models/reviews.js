@@ -1,10 +1,11 @@
 const db = require("../db/connection");
+const { checkIfNum } = require("../util-functions");
 
 const fetchReviewById = async (id) => {
-  const idType = isNaN(id);
-  if (idType) {
+  if (!checkIfNum(id)) {
     return Promise.reject({ status: 400, msg: "Invalid request" });
   }
+  
   const { rows } = await db.query(
     `SELECT reviews.*, COUNT(comments.review_id) AS comment_count
     FROM reviews
