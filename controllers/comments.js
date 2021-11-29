@@ -1,4 +1,4 @@
-const { fetchCommentsByReviewId, addCommentToReview, removeCommentById } = require("../models/comments");
+const { fetchCommentsByReviewId, addCommentToReview, removeCommentById, updateCommentVotesById } = require("../models/comments");
 
 exports.getCommentsByReviewId = (req, res, next) => {
   const id = req.params.review_id;
@@ -24,6 +24,16 @@ exports.deleteCommentById = (req, res, next) => {
   removeCommentById(id)
   .then(() => {
     res.status(204).send();
+  })
+  .catch(next);
+}
+
+exports.patchCommentVotesById = (req, res, next) => {
+  const id = req.params.comment_id;
+  const voteChange = req.body;
+  updateCommentVotesById(id, voteChange)
+  .then((comment) => {
+    res.status(200).send({ comment });
   })
   .catch(next);
 }

@@ -1,5 +1,5 @@
 const db = require("../db/connection");
-const { checkIfNum, checkIdExists } = require("../util-functions");
+const { checkIfNum, checkIdExists, updateVotes } = require("../util-functions");
 
 const fetchCommentsByReviewId = async (id) => {
   if (!checkIfNum(id)) {
@@ -72,6 +72,28 @@ const removeCommentById = async (id) => {
   return rows;
 }
 
-module.exports = { fetchCommentsByReviewId, addCommentToReview, removeCommentById };
+const updateCommentVotesById = async (id, voteChange) => {
+  const { inc_votes } = voteChange;
+
+  if (!checkIfNum(inc_votes)) {
+    return Promise.reject({ status: 400, msg: "Invalid request object"});
+  }
+
+  let currentVotesQuery = `SELECT votes FROM comments WHERE comment_id = $1`;
+  const currentVotes = await db.query(currentVotesQuery, [id]);
+
+  const updatedVotes = updateVotes(currentVotes.rows, inc_votes);
+
+  let queryStr = `UPDATE comments SET votes = $1 WHERE comment_id = $2 RETURNING *;`;
+  const queryParams = [updatedVotes, id];
+
+  const { rows } = await db.query(queryStr, queryParams);
+  if (rows.length === 0) {
+    return Promise.reject({ status: 404, msg: "Review not found" });
+  }
+  return rows[0]
+}
+
+module.exports = { fetchCommentsByReviewId, addCommentToReview, removeCommentById, updateCommentVotesById };
 
 
